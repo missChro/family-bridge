@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>家书 · Family Bridge</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root { --ink:#1a1208; --paper:#faf6ef; --warm:#c8956c; --muted:#8a7560; --light:#ede8df; --green:#4a7c59; --blue:#4a6c8a; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',sans-serif;min-height:100vh;padding:32px 16px 60px;display:flex;flex-direction:column;align-items:center;}
+.logo{text-align:center;margin-bottom:24px;}
+.logo h1{font-family:'Noto Serif SC',serif;font-size:30px;font-weight:300;letter-spacing:8px;}
+.logo h1 span{color:var(--warm);}
+.logo p{font-size:12px;color:var(--muted);letter-spacing:3px;margin-top:4px;}
+.divider{width:36px;height:1px;background:var(--warm);margin:0 auto 20px;opacity:0.4;}
+
+.notice{width:100%;max-width:520px;background:#fff8f0;border:1px solid rgba(200,149,108,0.3);border-radius:3px;padding:10px 14px;font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px;}
+.notice strong{color:var(--warm);}
+
+.roles{width:100%;max-width:520px;display:flex;gap:10px;margin-bottom:14px;}
+.role{flex:1;padding:12px;border:1.5px solid var(--light);border-radius:4px;background:white;cursor:pointer;text-align:center;font-family:'Noto Sans SC',sans-serif;}
+.role .icon{font-size:20px;display:block;margin-bottom:3px;}
+.role .name{font-size:13px;color:var(--muted);}
+.role.sel-ch{border-color:var(--green);background:rgba(74,124,89,0.06);}
+.role.sel-ch .name{color:var(--green);}
+.role.sel-pa{border-color:var(--blue);background:rgba(74,108,138,0.06);}
+.role.sel-pa .name{color:var(--blue);}
+
+.box{width:100%;max-width:520px;background:white;border-radius:3px;box-shadow:0 2px 14px rgba(26,18,8,0.07),0 0 0 1px rgba(26,18,8,0.04);overflow:hidden;margin-bottom:12px;}
+.box-head{padding:15px 20px;display:flex;align-items:center;gap:10px;}
+.box-head.ch{background:var(--green);}
+.box-head.pa{background:var(--blue);}
+.box-head span{font-family:'Noto Serif SC',serif;font-size:14px;font-weight:300;letter-spacing:2px;color:white;}
+.box-body{padding:18px 20px;}
+
+.privacy{background:#f5f0e8;border-left:3px solid var(--warm);border-radius:2px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--muted);line-height:1.8;}
+.privacy b{color:var(--ink);font-weight:400;}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.chip{background:var(--light);border-radius:20px;padding:4px 11px;font-size:12px;color:var(--muted);cursor:pointer;border:1px solid transparent;}
+.chip:active{background:var(--warm);color:white;}
+
+textarea{width:100%;border:1px solid var(--light);border-radius:2px;padding:12px;font-size:13px;font-family:'Noto Sans SC',sans-serif;color:var(--ink);background:var(--paper);resize:none;height:90px;line-height:1.9;outline:none;}
+.cnt{text-align:right;font-size:11px;color:var(--muted);margin-top:4px;}
+
+.btn{width:100%;padding:13px;border:none;border-radius:2px;font-size:13px;letter-spacing:2px;font-family:'Noto Sans SC',sans-serif;cursor:pointer;margin-top:12px;display:block;}
+.btn-ch{background:var(--green);color:white;}
+.btn-pa{background:var(--blue);color:white;}
+.btn-ink{background:var(--ink);color:var(--paper);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--light);font-size:12px;letter-spacing:1px;}
+
+/* HIDDEN by default */
+.hidden{display:none !important;}
+
+canvas{display:block;}
+
+/* Preview letter text */
+.letter{font-family:'Noto Serif SC',serif;font-size:14px;line-height:2;color:var(--ink);font-weight:300;white-space:pre-wrap;padding:14px;background:var(--paper);border-radius:2px;border:1px solid var(--light);}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.date-txt{font-size:11px;color:var(--muted);}
+.edit-lnk{font-size:12px;color:var(--warm);cursor:pointer;}
+textarea.edit-box{margin-top:10px;border-color:var(--warm);min-height:80px;height:auto;}
+
+/* Success */
+.suc-icon{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:white;}
+.suc-icon.ch{background:var(--green);}
+.suc-icon.pa{background:var(--blue);}
+.suc-title{font-family:'Noto Serif SC',serif;font-size:18px;font-weight:300;letter-spacing:3px;margin-bottom:10px;text-align:center;}
+.suc-sub{font-size:13px;color:var(--muted);line-height:2.1;text-align:center;}
+.suc-hl{color:var(--warm);}
+
+/* Loading spinner */
+.dots{display:inline-flex;gap:4px;vertical-align:middle;}
+.dots i{width:5px;height:5px;background:white;border-radius:50%;display:inline-block;animation:bonce 1.2s infinite;}
+.dots i:nth-child(2){animation-delay:.2s;}
+.dots i:nth-child(3){animation-delay:.4s;}
+@keyframes bonce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <h1>家<span>书</span></h1>
+  <p>Family Bridge · 让爱双向流动</p>
+</div>
+<div class="divider"></div>
+
+<div class="notice">📋 <strong>产品原型演示</strong> · 可完整体验预览、修改、复制全流程</div>
+
+<!-- 角色选择 -->
+<div class="roles">
+  <div class="role sel-ch" id="rCh" onclick="setRole('ch')">
+    <span class="icon">🧑‍💼</span><div class="name">我是孩子</div>
+  </div>
+  <div class="role" id="rPa" onclick="setRole('pa')">
+    <span class="icon">👴</span><div class="name">我是父母</div>
+  </div>
+</div>
+
+<!-- 输入区 -->
+<div class="box" id="inputBox">
+  <div class="box-head ch" id="inputHead">
+    <span id="inputTitle">今天发生了什么？</span>
+  </div>
+  <div class="box-body">
+    <div class="privacy">🔒 <b>隐私保护：</b>内容仅用于生成家书，不储存，图片用后即清除，每条消息由你确认后才发出。</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.9;" id="inputDesc">上传照片（选填），写几句今天的事，AI 生成一张<b style="color:var(--ink);font-weight:400;">图文明信片</b>发给爸妈。</p>
+
+    <!-- 图片上传 -->
+    <label style="display:block;border:1.5px dashed var(--light);border-radius:4px;padding:14px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative;background:var(--paper);" id="uploadLbl">
+      <input type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="pickPhoto(this)">
+      <img id="prevImg" src="" alt="" class="hidden" style="width:100%;max-height:150px;object-fit:cover;border-radius:3px;">
+      <div id="uploadHint" style="font-size:13px;color:var(--muted);"><span style="font-size:20px;display:block;margin-bottom:3px;">📷</span>点击上传今天的照片（选填）</div>
+    </label>
+
+    <!-- 快捷标签 -->
+    <div class="chips" id="chipRow"></div>
+
+    <textarea id="userInput" oninput="document.getElementById('cnt').textContent=this.value.length"></textarea>
+    <div class="cnt"><span id="cnt">0</span> 字</div>
+
+    <button class="btn btn-ch" id="genBtn" onclick="doGenerate()">生成家书</button>
+  </div>
+</div>
+
+<!-- 预览区 -->
+<div class="box hidden" id="previewBox">
+  <div class="box-head ch" id="previewHead">
+    <span id="previewLabel">📮 给爸妈的家书</span>
+    <span style="margin-left:auto;background:rgba(255,255,255,0.22);color:white;font-size:11px;padding:2px 9px;border-radius:10px;">预览确认</span>
+  </div>
+  <div class="box-body">
+    <div class="letter" id="letterText"></div>
+    <div class="meta">
+      <div class="date-txt" id="dateText"></div>
+      <div class="edit-lnk" onclick="toggleEdit()">✏️ 修改文字</div>
+    </div>
+    <textarea class="edit-box hidden" id="editBox" placeholder="修改后点击完成..." onfocus="this.style.height='auto'" oninput="this.style.height=this.scrollHeight+'px'"></textarea>
+    <button class="btn hidden" id="doneEditBtn" onclick="doneEdit()" style="background:var(--warm);color:white;letter-spacing:1px;font-size:13px;">✓ 完成修改，重新预览</button>
+  </div>
+</div>
+
+<!-- 操作按钮 -->
+<div style="width:100%;max-width:520px;" id="actionArea" class="hidden">
+  <button class="btn btn-ch" id="actionBtn" onclick="doAction()">✓ 确认，一键复制微信消息</button>
+  <button class="btn btn-ghost" onclick="doGenerate()" style="margin-top:8px;">↻ 重新生成</button>
+</div>
+
+<!-- 成功页 -->
+<div class="box hidden" id="successBox">
+  <div class="box-body" style="padding:32px 20px;">
+    <div class="suc-icon ch" id="sucIcon">✓</div>
+    <div class="suc-title" id="sucTitle">消息已复制</div>
+    <p class="suc-sub" id="sucSub"></p>
+    <button class="btn btn-ink" style="margin-top:20px;letter-spacing:2px;" onclick="doReset()">明天再写一封</button>
+  </div>
+</div>
+
+<script>
+var role = 'ch';
+var generated = '';
+var imgBase64 = '';
+var imgDataUrl = '';
+var imgMediaType = '';
+var hasImg = false;
+
+var SAMPLES = {
+  ch: [
+    '妈，今天和小豆去看了《记忆碎片》，超级烧脑！看完回来两人一起复盘逻辑，聊了好久才理清楚。小豆最近还报了驾校，正在刷题备考，两个月后说不定就能拿证啦～你们那边天气怎么样？注意保暖哦。',
+    '爸妈，今天工作还算顺利，下班买了碗热干面，吃完整个人都暖了。最近睡眠规律了很多，你们别担心我。周末有空想打个视频，好久没见你们了，想你们～'
+  ],
+  pa: [
+    '孩子，今天去公园遛弯，碰到邻居老王，他家孙子也在外地工作，我们聊了好一会儿。天气挺好的，拍了张照片给你看看。你那边忙不忙？不用特意回，看到了就好。',
+    '今天你爸做了红烧肉，味道不错，想着你小时候最爱吃。家里一切都好，你安心工作。有空给我们报个平安就够了，不用担心我们。'
+  ]
+};
+
+var CHIPS = {
+  ch: ['🍜 吃了什么','💼 工作状态','🌤 天气心情','🏃 做了运动','📺 看了什么','💊 身体状况'],
+  pa: ['🌿 今天做了什么','🍱 吃了什么','💊 身体状况','🌤 天气','💭 往事回忆','💬 想说的话']
+};
+
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+function el(id){ return document.getElementById(id); }
+
+function setRole(r) {
+  role = r;
+  var isCh = r === 'ch';
+  el('rCh').className = 'role' + (isCh ? ' sel-ch' : '');
+  el('rPa').className = 'role' + (!isCh ? ' sel-pa' : '');
+
+  var theme = isCh ? 'ch' : 'pa';
+  el('inputHead').className = 'box-head ' + theme;
+  el('inputTitle').textContent = isCh ? '今天发生了什么？' : '想和孩子分享什么？';
+  el('inputDesc').innerHTML = isCh
+    ? '上传照片（选填），写几句今天的事，AI 生成一张<b style="color:var(--ink);font-weight:400;">图文明信片</b>发给爸妈。'
+    : '写几句今天家里的事，AI 帮你整理成孩子愿意看、不会觉得唠叨的消息。';
+  el('genBtn').className = 'btn btn-' + theme;
+
+  el('previewHead').className = 'box-head ' + theme;
+  el('previewLabel').textContent = isCh ? '📮 给爸妈的家书' : '📮 给孩子的家书';
+  el('actionBtn').className = 'btn btn-' + theme;
+  el('sucIcon').className = 'suc-icon ' + theme;
+
+  el('userInput').placeholder = isCh
+    ? '比如：今天和小豆去看了记忆碎片，超烧脑，回来一起复盘了好久...'
+    : '比如：今天去公园遛弯，碰到邻居老王，聊得挺开心...';
+
+  var row = el('chipRow');
+  row.innerHTML = '';
+  CHIPS[r].forEach(function(c){
+    var d = document.createElement('div');
+    d.className = 'chip';
+    d.textContent = c;
+    d.onclick = function(){ addChip(c.replace(/^[\S]+ /,'')); };
+    row.appendChild(d);
+  });
+
+  hide('previewBox'); hide('actionArea'); hide('successBox');
+}
+
+function addChip(text) {
+  var ta = el('userInput');
+  if (ta.value && !/[，。\n]$/.test(ta.value)) ta.value += '，';
+  ta.value += text + '：';
+  el('cnt').textContent = ta.value.length;
+  ta.focus();
+}
+
+function pickPhoto(input) {
+  var file = input.files[0];
+  if (!file) return;
+  imgMediaType = file.type || 'image/jpeg';
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    imgDataUrl = e.target.result;
+    imgBase64 = e.target.result.split(',')[1];
+    hasImg = true;
+    el('prevImg').src = imgDataUrl;
+    show('prevImg');
+    hide('uploadHint');
+  };
+  reader.readAsDataURL(file);
+}
+
+function getDate() {
+  var d = new Date();
+  var days = ['日','一','二','三','四','五','六'];
+  return (d.getMonth()+1) + '月' + d.getDate() + '日 · 星期' + days[d.getDay()];
+}
+
+function doGenerate() {
+  var btn = el('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+  hide('previewBox'); hide('actionArea'); hide('successBox');
+
+  // Reset edit state
+  hide('editBox');
+  hide('doneEditBtn');
+
+  setTimeout(function() {
+    // Try API, always fall back to sample
+    tryAPI(function(text) {
+      generated = text;
+      el('letterText').textContent = generated;
+      el('editBox').value = generated;
+      el('dateText').textContent = getDate();
+
+      if (hasImg && imgDataUrl) {
+        renderCanvas(generated);
+        el('actionBtn').textContent = '↓ 保存明信片，发给' + (role==='ch'?'爸妈':'孩子');
+      } else {
+        el('actionBtn').textContent = '✓ 确认，一键复制微信消息';
+      }
+
+      show('previewBox');
+      show('actionArea');
+      el('previewBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      btn.disabled = false;
+      btn.textContent = '重新生成';
+    });
+  }, 300);
+}
+
+function tryAPI(cb) {
+  var input = el('userInput').value.trim() || '请根据图片生成内容。';
+  var system = role === 'ch'
+    ? '你帮助年轻人和父母保持联系。整理成温暖亲切的话发给父母。60-100字，语气自然，结尾关心父母，直接输出正文。'
+    : '你帮助父母和孩子保持联系。整理成温暖不唠叨的话发给孩子。60-100字，关爱但不造成压力，结尾不催回复，直接输出正文。';
+
+  var userContent = (hasImg && imgBase64)
+    ? [
+        { type: 'image', source: { type: 'base64', media_type: imgMediaType, data: imgBase64 } },
+        { type: 'text', text: input }
+      ]
+    : input;
+
+  var body = { model:'claude-sonnet-4-20250514', max_tokens:500, system:system, messages:[{role:'user',content:userContent}] };
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/claude', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.timeout = 8000;
+  xhr.onload = function() {
+    try {
+      var data = JSON.parse(xhr.responseText);
+      if (data.content && data.content[0] && data.content[0].text) {
+        cb(data.content[0].text); return;
+      }
+    } catch(e){}
+    useSample(cb);
+  };
+  xhr.onerror = xhr.ontimeout = function(){ useSample(cb); };
+  try { xhr.send(JSON.stringify(body)); } catch(e){ useSample(cb); }
+}
+
+function useSample(cb) {
+  var arr = SAMPLES[role];
+  cb(arr[Math.floor(Math.random() * arr.length)]);
+}
+
+function toggleEdit() {
+  var box = el('editBox');
+  if (box.classList.contains('hidden')) {
+    show('editBox');
+    box.style.height = box.scrollHeight + 'px';
+    show('doneEditBtn');
+    box.focus();
+  } else {
+    doneEdit();
+  }
+}
+
+function doneEdit() {
+  var val = el('editBox').value.trim();
+  if (val) {
+    generated = val;
+    el('letterText').textContent = generated;
+    if (hasImg && imgDataUrl) renderCanvas(generated);
+  }
+  hide('editBox');
+  hide('doneEditBtn');
+}
+
+function renderCanvas(text) {
+  var existing = el('canvasWrap');
+  if (!existing) {
+    var wrap = document.createElement('div');
+    wrap.id = 'canvasWrap';
+    var canvas = document.createElement('canvas');
+    canvas.id = 'myCanvas';
+    wrap.appendChild(canvas);
+    el('previewBox').insertBefore(wrap, el('previewBox').querySelector('.box-body'));
+  }
+  var canvas = document.getElementById('myCanvas');
+  var W = el('previewBox').clientWidth || 520;
+  var H = Math.round(W * 1.2);
+  canvas.width = W*2; canvas.height = H*2;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(2,2);
+  var img = new Image();
+  img.onload = function() {
+    document.fonts.ready.then(function() {
+      var sY = Math.round(H*0.58);
+      var sc = Math.max(W/img.width, sY/img.height);
+      ctx.drawImage(img, (img.width-W/sc)/2, 0, W/sc, sY/sc, 0, 0, W, sY);
+      var g = ctx.createLinearGradient(0,sY*0.4,0,sY);
+      g.addColorStop(0,'rgba(26,18,8,0)'); g.addColorStop(1,'rgba(26,18,8,0.8)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,sY);
+      ctx.fillStyle='#1a1208'; ctx.fillRect(0,sY,W,H-sY);
+      var px=22, ty=sY+16;
+      ctx.font='300 10px Noto Sans SC'; ctx.fillStyle='rgba(250,246,239,0.4)'; ctx.textAlign='left';
+      ctx.fillText(getDate(),px,ty);
+      ctx.strokeStyle='rgba(200,149,108,0.45)'; ctx.lineWidth=0.5;
+      ctx.beginPath(); ctx.moveTo(px,ty+12); ctx.lineTo(W-px,ty+12); ctx.stroke();
+      ctx.font='300 13px Noto Serif SC'; ctx.fillStyle='rgba(250,246,239,0.9)';
+      var lh=22,mw=W-px*2,y=ty+30,line='';
+      for(var i=0;i<text.length;i++){
+        var ch=text[i],t=line+ch;
+        if(ctx.measureText(t).width>mw||ch==='\n'){
+          if(y+lh<H-20){ctx.fillText(line,px,y);y+=lh;} line=ch==='\n'?'':ch;
+        } else line=t;
+      }
+      if(line&&y<H-20) ctx.fillText(line,px,y);
+      ctx.font='300 9px Noto Serif SC'; ctx.fillStyle='rgba(200,149,108,0.4)'; ctx.textAlign='right';
+      ctx.fillText('家书 · Family Bridge',W-px,H-12);
+    });
+  };
+  img.src = imgDataUrl;
+}
+
+function doAction() {
+  if (hasImg && imgDataUrl) {
+    var canvas = document.getElementById('myCanvas');
+    if (canvas) {
+      var a = document.createElement('a');
+      a.download = '家书_' + new Date().toLocaleDateString('zh-CN') + '.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+  } else {
+    try { navigator.clipboard.writeText(generated); } catch(e) {
+      var ta = document.createElement('textarea');
+      ta.value = generated; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    }
+  }
+
+  var isCh = role === 'ch';
+  el('sucTitle').textContent = (hasImg && imgDataUrl) ? '明信片已保存' : '消息已复制';
+  el('sucSub').innerHTML = (hasImg && imgDataUrl)
+    ? '打开微信，从相册选择这张明信片<br>发给'+(isCh?'爸妈':'孩子')+'就好了 🖼️<br><br><span class="suc-hl">'+(isCh?'爸妈看到你的照片，会很开心的':'孩子看到你的消息，会很温暖的')+' ❤️</span>'
+    : '将这条消息粘贴到微信<br>发给'+(isCh?'爸妈':'孩子')+'就好了 💬<br><br><span class="suc-hl">'+(isCh?'爸妈收到你的消息，就放心了':'孩子知道你过得好，就放心了')+' ❤️</span>';
+
+  hide('previewBox'); hide('actionArea');
+  show('successBox');
+  el('successBox').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function doReset() {
+  el('userInput').value = ''; el('cnt').textContent = '0';
+  hide('prevImg'); show('uploadHint');
+  hide('editBox'); hide('doneEditBtn');
+  imgBase64=''; imgDataUrl=''; hasImg=false; generated='';
+  hide('previewBox'); hide('actionArea'); hide('successBox');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+setRole('ch');
+</script>
+</body>
+</html>
