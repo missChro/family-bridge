@@ -292,14 +292,14 @@ function tryAPI(cb) {
     ? '你帮助年轻人和父母保持联系。整理成温暖亲切的话发给父母。60-100字，语气自然，结尾关心父母，直接输出正文。'
     : '你帮助父母和孩子保持联系。整理成温暖不唠叨的话发给孩子。60-100字，关爱但不造成压力，结尾不催回复，直接输出正文。';
 
-  var userContent = (hasImg && imgBase64)
-    ? [
-        { type: 'image', source: { type: 'base64', media_type: imgMediaType, data: imgBase64 } },
-        { type: 'text', text: input }
-      ]
-    : input;
-
-  var body = { model:'claude-sonnet-4-20250514', max_tokens:500, system:system, messages:[{role:'user',content:userContent}] };
+  var body = {
+    model: 'deepseek-chat',
+    max_tokens: 500,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: input }
+    ]
+  };
 
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/claude', true);
@@ -308,8 +308,8 @@ function tryAPI(cb) {
   xhr.onload = function() {
     try {
       var data = JSON.parse(xhr.responseText);
-      if (data.content && data.content[0] && data.content[0].text) {
-        cb(data.content[0].text); return;
+      if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+        cb(data.choices[0].message.content); return;
       }
     } catch(e){}
     useSample(cb);
